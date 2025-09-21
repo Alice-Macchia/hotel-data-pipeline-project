@@ -112,7 +112,7 @@ Per una visione dettagliata dell'esecuzione del DAG in Airflow, comprese le conf
 
 La repository è organizzata per separare in modo netto le due diverse implementazioni del progetto, i dati e la documentazione.
 
-.
+```
 ├── airflow_implementation/     # --- Logica per l'implementazione con Airflow ---
 │   ├── dags/                   # Contiene il file del DAG
 │   └── scripts/                # Script Python chiamati dal DAG (Bronze, Silver, Gold)
@@ -128,3 +128,4 @@ La repository è organizzata per separare in modo netto le due diverse implement
 ├── .gitignore                  # Specifica i file da ignorare (es. cache, venv)
 ├── README.md                   # Questo file: la documentazione principale del progetto
 └── requirements.txt            # Librerie Python necessarie per l'implementazione Airflow
+```
