@@ -1,6 +1,6 @@
 # 🏨 GlobalStay Hotel Analytics: Pipeline ETL & ML su Databricks
 
-[![Azure Resource Group](https://img.shields.io/badge/Azure%20Resource%20Group-0078D4?logo=microsoftazure)]((https://portal.azure.com/#@laboratorioacademy.onmicrosoft.com/resource/subscriptions/4e24ce49-a5f9-4420-a0f4-368706743360/resourceGroups/rg-project-alice/overview))
+[![Azure Resource Group](https://img.shields.io/badge/Azure%20Resource%20Group-0078D4?logo=microsoftazure)](https://portal.azure.com/#@laboratorioacademy.onmicrosoft.com/resource/subscriptions/4e24ce49-a5f9-4420-a0f4-368706743360/resourceGroups/rg-project-alice/overview)
 
 Questo progetto implementa una pipeline di dati end-to-end sulla piattaforma Databricks per processare, analizzare e modellare i dati di prenotazione di una catena alberghiera. L'obiettivo è trasformare dati grezzi (CSV) in insight di business pronti per l'analisi, attraverso una dashboard interattiva e un modello di machine learning.
 
