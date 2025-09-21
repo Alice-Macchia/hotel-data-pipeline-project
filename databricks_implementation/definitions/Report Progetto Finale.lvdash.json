@@ -1,0 +1,1087 @@
+{
+  "datasets": [
+    {
+      "name": "db0a128d",
+      "displayName": "KPI 1: Daily Revenue",
+      "queryLines": [
+        "SELECT date, gross_revenue\r\n",
+        "FROM catalog_progetto_finale.gold_schema_pf.kpi_daily_revenue_gold\r\n",
+        "ORDER BY date ASC"
+      ]
+    },
+    {
+      "name": "ebc39dbb",
+      "displayName": "KPI 2: Cancellation Rate by Source",
+      "queryLines": [
+        "SELECT source, cancellation_rate_pct\r\n",
+        "FROM catalog_progetto_finale.gold_schema_pf.kpi_cancellation_rate_by_source_gold\r\n",
+        "ORDER BY cancellation_rate_pct DESC"
+      ]
+    },
+    {
+      "name": "255c582c",
+      "displayName": "KPI 3: Collection Rate",
+      "queryLines": [
+        "SELECT hotel_id, collection_rate * 100 AS collection_rate_percentage\r\n",
+        "FROM catalog_progetto_finale.gold_schema_pf.kpi_collection_rate_by_hotel_gold\r\n",
+        "ORDER BY hotel_id"
+      ]
+    },
+    {
+      "name": "49c81936",
+      "displayName": "KPI 4: Overbooking Alerts",
+      "queryLines": [
+        "SELECT room_id, booking_id_1, booking_id_2, overlap_start, overlap_end\r\n",
+        "FROM catalog_progetto_finale.gold_schema_pf.kpi_overbooking_alerts_gold"
+      ]
+    },
+    {
+      "name": "5e7b46f4",
+      "displayName": "contatore KPI 4",
+      "queryLines": [
+        "SELECT COUNT(*) as total_overbookings FROM catalog_progetto_finale.gold_schema_pf.kpi_overbooking_alerts_gold"
+      ]
+    },
+    {
+      "name": "459c5800",
+      "displayName": "KPI 5: Customer Value",
+      "queryLines": [
+        "SELECT first_name, last_name, bookings_count, revenue_sum, avg_ticket\r\n",
+        "FROM catalog_progetto_finale.gold_schema_pf.kpi_customer_value_gold\r\n",
+        "ORDER BY revenue_sum DESC\r\n",
+        "LIMIT 20 -- Limita ai primi 20 per non appesantire la dashboard"
+      ]
+    },
+    {
+      "name": "b6577f75",
+      "displayName": "Fatturato totale",
+      "queryLines": [
+        "-- Formatta il numero per renderlo più leggibile e aggiunge il simbolo dell'Euro\r\n",
+        "SELECT CONCAT('€ ', FORMAT_NUMBER(SUM(gross_revenue), 0))\r\n",
+        "FROM catalog_progetto_finale.gold_schema_pf.kpi_daily_revenue_gold"
+      ]
+    },
+    {
+      "name": "afc28fe5",
+      "displayName": "Tasso di incasso medio",
+      "queryLines": [
+        "SELECT CONCAT(FORMAT_NUMBER(AVG(collection_rate) * 100, 1), ' %')\r\n",
+        "FROM catalog_progetto_finale.gold_schema_pf.kpi_collection_rate_by_hotel_gold"
+      ]
+    },
+    {
+      "name": "6224056d",
+      "displayName": "Prenotazioni totali",
+      "queryLines": [
+        "SELECT FORMAT_NUMBER(SUM(bookings_count), 0)\r\n",
+        "FROM catalog_progetto_finale.gold_schema_pf.kpi_daily_revenue_gold"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "ed8e1cc3",
+      "displayName": "Analisi esecutiva",
+      "layout": [
+        {
+          "widget": {
+            "name": "616d530f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "db0a128d",
+                  "fields": [
+                    {
+                      "name": "monthly(date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `date`)"
+                    },
+                    {
+                      "name": "sum(gross_revenue)",
+                      "expression": "SUM(`gross_revenue`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(date)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "date"
+                },
+                "y": {
+                  "fieldName": "sum(gross_revenue)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of gross_revenue"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "e450ffb3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ebc39dbb",
+                  "fields": [
+                    {
+                      "name": "source",
+                      "expression": "`source`"
+                    },
+                    {
+                      "name": "sum(cancellation_rate_pct)",
+                      "expression": "SUM(`cancellation_rate_pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "source",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "source"
+                },
+                "y": {
+                  "fieldName": "sum(cancellation_rate_pct)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of cancellation_rate_pct"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 20,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "81a5d8fc",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "255c582c",
+                  "fields": [
+                    {
+                      "name": "hotel_id",
+                      "expression": "`hotel_id`"
+                    },
+                    {
+                      "name": "sum(collection_rate_percentage)",
+                      "expression": "SUM(`collection_rate_percentage`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "hotel_id",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "hotel_id"
+                },
+                "y": {
+                  "fieldName": "sum(collection_rate_percentage)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of collection_rate_percentage"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 20,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "89f4f677",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "49c81936",
+                  "fields": [
+                    {
+                      "name": "room_id",
+                      "expression": "`room_id`"
+                    },
+                    {
+                      "name": "booking_id_1",
+                      "expression": "`booking_id_1`"
+                    },
+                    {
+                      "name": "booking_id_2",
+                      "expression": "`booking_id_2`"
+                    },
+                    {
+                      "name": "overlap_start",
+                      "expression": "`overlap_start`"
+                    },
+                    {
+                      "name": "overlap_end",
+                      "expression": "`overlap_end`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "room_id",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "imageHeight": "",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkOpenInNewTab": true,
+                    "type": "string",
+                    "displayAs": "string",
+                    "visible": true,
+                    "order": 100000,
+                    "title": "room_id",
+                    "allowSearch": false,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "highlightLinks": false,
+                    "useMonospaceFont": false,
+                    "preserveWhitespace": false,
+                    "displayName": "room_id"
+                  },
+                  {
+                    "fieldName": "booking_id_1",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "imageHeight": "",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkOpenInNewTab": true,
+                    "type": "string",
+                    "displayAs": "string",
+                    "visible": true,
+                    "order": 100001,
+                    "title": "booking_id_1",
+                    "allowSearch": false,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "highlightLinks": false,
+                    "useMonospaceFont": false,
+                    "preserveWhitespace": false,
+                    "displayName": "booking_id_1"
+                  },
+                  {
+                    "fieldName": "booking_id_2",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "imageHeight": "",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkOpenInNewTab": true,
+                    "type": "string",
+                    "displayAs": "string",
+                    "visible": true,
+                    "order": 100002,
+                    "title": "booking_id_2",
+                    "allowSearch": false,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "highlightLinks": false,
+                    "useMonospaceFont": false,
+                    "preserveWhitespace": false,
+                    "displayName": "booking_id_2"
+                  },
+                  {
+                    "fieldName": "overlap_start",
+                    "dateTimeFormat": "DD/MM/YYYY HH:mm:ss.SSS",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "imageHeight": "",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkOpenInNewTab": true,
+                    "type": "datetime",
+                    "displayAs": "datetime",
+                    "visible": true,
+                    "order": 100003,
+                    "title": "overlap_start",
+                    "allowSearch": false,
+                    "alignContent": "right",
+                    "allowHTML": false,
+                    "highlightLinks": false,
+                    "useMonospaceFont": false,
+                    "preserveWhitespace": false,
+                    "displayName": "overlap_start"
+                  },
+                  {
+                    "fieldName": "overlap_end",
+                    "dateTimeFormat": "DD/MM/YYYY HH:mm:ss.SSS",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "imageHeight": "",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkOpenInNewTab": true,
+                    "type": "datetime",
+                    "displayAs": "datetime",
+                    "visible": true,
+                    "order": 100004,
+                    "title": "overlap_end",
+                    "allowSearch": false,
+                    "alignContent": "right",
+                    "allowHTML": false,
+                    "highlightLinks": false,
+                    "useMonospaceFont": false,
+                    "preserveWhitespace": false,
+                    "displayName": "overlap_end"
+                  }
+                ]
+              },
+              "invisibleColumns": [],
+              "allowHTMLByDefault": false,
+              "itemsPerPage": 25,
+              "paginationSize": "default",
+              "condensed": true,
+              "withRowNumber": false
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 37,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "567a13af",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "459c5800",
+                  "fields": [
+                    {
+                      "name": "first_name",
+                      "expression": "`first_name`"
+                    },
+                    {
+                      "name": "last_name",
+                      "expression": "`last_name`"
+                    },
+                    {
+                      "name": "bookings_count",
+                      "expression": "`bookings_count`"
+                    },
+                    {
+                      "name": "revenue_sum",
+                      "expression": "`revenue_sum`"
+                    },
+                    {
+                      "name": "avg_ticket",
+                      "expression": "`avg_ticket`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "first_name",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "imageHeight": "",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkOpenInNewTab": true,
+                    "type": "string",
+                    "displayAs": "string",
+                    "visible": true,
+                    "order": 100000,
+                    "title": "first_name",
+                    "allowSearch": false,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "highlightLinks": false,
+                    "useMonospaceFont": false,
+                    "preserveWhitespace": false,
+                    "displayName": "first_name"
+                  },
+                  {
+                    "fieldName": "last_name",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "imageHeight": "",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkOpenInNewTab": true,
+                    "type": "string",
+                    "displayAs": "string",
+                    "visible": true,
+                    "order": 100001,
+                    "title": "last_name",
+                    "allowSearch": false,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "highlightLinks": false,
+                    "useMonospaceFont": false,
+                    "preserveWhitespace": false,
+                    "displayName": "last_name"
+                  },
+                  {
+                    "fieldName": "bookings_count",
+                    "numberFormat": "0",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "imageHeight": "",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkOpenInNewTab": true,
+                    "type": "integer",
+                    "displayAs": "number",
+                    "visible": true,
+                    "order": 100002,
+                    "title": "bookings_count",
+                    "allowSearch": false,
+                    "alignContent": "right",
+                    "allowHTML": false,
+                    "highlightLinks": false,
+                    "useMonospaceFont": false,
+                    "preserveWhitespace": false,
+                    "displayName": "bookings_count"
+                  },
+                  {
+                    "fieldName": "revenue_sum",
+                    "numberFormat": "0.00",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "imageHeight": "",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkOpenInNewTab": true,
+                    "type": "float",
+                    "displayAs": "number",
+                    "visible": true,
+                    "order": 100003,
+                    "title": "revenue_sum",
+                    "allowSearch": false,
+                    "alignContent": "right",
+                    "allowHTML": false,
+                    "highlightLinks": false,
+                    "useMonospaceFont": false,
+                    "preserveWhitespace": false,
+                    "displayName": "revenue_sum"
+                  },
+                  {
+                    "fieldName": "avg_ticket",
+                    "numberFormat": "0.00",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "imageHeight": "",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkOpenInNewTab": true,
+                    "type": "float",
+                    "displayAs": "number",
+                    "visible": true,
+                    "order": 100004,
+                    "title": "avg_ticket",
+                    "allowSearch": false,
+                    "alignContent": "right",
+                    "allowHTML": false,
+                    "highlightLinks": false,
+                    "useMonospaceFont": false,
+                    "preserveWhitespace": false,
+                    "displayName": "avg_ticket"
+                  }
+                ]
+              },
+              "invisibleColumns": [],
+              "allowHTMLByDefault": false,
+              "itemsPerPage": 25,
+              "paginationSize": "default",
+              "condensed": true,
+              "withRowNumber": false
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 30,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "3caaa73c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b6577f75",
+                  "fields": [
+                    {
+                      "name": "concat(€ , format_number(sum(gross_revenue), 0))",
+                      "expression": "`concat(€ , format_number(sum(gross_revenue), 0))`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "concat(€ , format_number(sum(gross_revenue), 0))",
+                  "displayName": "concat(€ , format_number(sum(gross_revenue), 0))"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "dabff811",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "afc28fe5",
+                  "fields": [
+                    {
+                      "name": "concat(format_number((avg(collection_rate) * 100), 1),  %)",
+                      "expression": "`concat(format_number((avg(collection_rate) * 100), 1),  %)`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "concat(format_number((avg(collection_rate) * 100), 1),  %)",
+                  "displayName": "concat(format_number((avg(collection_rate) * 100), 1),  %)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "f6d4eca2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "6224056d",
+                  "fields": [
+                    {
+                      "name": "format_number(sum(bookings_count), 0)",
+                      "expression": "`format_number(sum(bookings_count), 0)`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "format_number(sum(bookings_count), 0)",
+                  "displayName": "format_number(sum(bookings_count), 0)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 5,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "d9ead056",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size:36px;line-height:1.5\">**Report Performance Hotel**</span>\n",
+                "\n",
+                "Questa dashboard analizza i dati di prenotazione per l'anno 2025, evidenziando i principali KPI di fatturato, operativi e di clientela."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "6e5d45f6",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size:18px\">**Livello 1: Riepilogo Esecutivo**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "d9e8d187",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Analisi dei Ricavi<br>Osservazione: Il fatturato mostra una solida performance nella prima metà dell'anno, con un picco a Febbraio e un andamento stabile fino a Giugno.\n",
+                "\n",
+                "Azione Consigliata: Si nota un calo significativo nei mesi di Luglio e Agosto. È fondamentale investigare le cause: si tratta di un calo fisiologico del mercato, di un problema di pricing o di un aumento della concorrenza nel periodo estivo?"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 6,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "45d1f705",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Performance Canali e Hotel<br>Cancellazioni: I canali \"walk\\_in\" e \"mobile\" registrano il tasso di cancellazione più elevato. Sebbene la differenza non sia estrema, potrebbe indicare una minore affidabilità delle prenotazioni provenienti da questi canali.\n",
+                "\n",
+                "Incassi: Il tasso di incasso è eccellente e uniformemente alto (superiore al 70%) per tutti gli hotel, indicando che i processi di pagamento e riscossione sono sani e non rappresentano un'area di preoccupazione."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 25,
+            "width": 6,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "ba263ab6",
+            "multilineTextboxSpec": {
+              "lines": [
+                "Dettagli Operativi e Analisi Clienti<br>Overbooking: Il numero di alert per prenotazioni sovrapposte è molto elevato (oltre 90 pagine di risultati), suggerendo un problema sistemico nel processo di assegnazione delle camere che necessita di una revisione tecnica urgente per evitare disservizi ai clienti.\n",
+                "\n",
+                "Clienti di Valore: La tabella dei clienti permette di identificare i segmenti ad alto valore. Clienti come Mia Silva e Ana Lopez rappresentano un asset strategico e potrebbero essere target di campagne di fidelizzazione personalizzate."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 43,
+            "width": 6,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "88f65053",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 14px;\">**Fatturato Totale (EUR)**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "43f4d971",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 14px;\">**Tasso di Incasso Medio (%)**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 4,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "4e6175cc",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 14px;\">**Prenotazioni Totali**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 4,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "aea667aa",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 18px;\">**Livello 4: Dettagli Operativi**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 28,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "0ab91e81",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 18px;\">**Classifica Clienti per Valore Generato&#32;**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 36,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "cfaa5c80",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size:18px\">**Livello 2: Andamento Generale**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "55a871bb",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 14px;\">**Tasso di Cancellazione per Canale di Prenotazione**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 19,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "08ccba90",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 18px;\">**Andamento Mensile dei Ricavi (Gross Revenue)&#32;**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "a74fa661",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 18px;\">**Livello 3: Performance a Confronto**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 18,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "b84afc68",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 14px;\">**Tasso di Incasso per Hotel**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 19,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "dcbc66bb",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"font-size: 18px;\">**Alert Prenotazioni Sovrapposte (Overbooking)&#32;**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 29,
+            "width": 6,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "d06c3d5d",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "f903124a",
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {},
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "b0c26b97",
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {},
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "a5b19581",
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {},
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "0b0b9347",
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {},
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    }
+  }
+}
