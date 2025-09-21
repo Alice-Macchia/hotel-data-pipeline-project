@@ -30,10 +30,10 @@ La soluzione adotta il modello architetturale **Medallion** a tre livelli, inter
 Il progetto è suddiviso in 5 fasi principali, dalla ricezione del dato grezzo fino alla sua visualizzazione e utilizzo predittivo.
 
 ### 1. Ingestion (Bronze Layer)
-I dati grezzi dai file CSV vengono caricati "così come sono" in tabelle Delta. [cite: 1] [cite_start]Viene aggiunta una colonna `ingestion_date` per tracciare il caricamento. 
+I dati grezzi dai file CSV vengono caricati "così come sono" in tabelle Delta. Viene aggiunta una colonna `ingestion_date` per tracciare il caricamento. 
 
 ### 2. Pulizia e Trasformazione (Silver Layer)
-I dati della Bronze Layer vengono puliti, standardizzati e validati per creare una "source of truth" affidabile. [cite: 1] Le regole di Data Quality includono:
+I dati della Bronze Layer vengono puliti, standardizzati e validati per creare una "source of truth" affidabile. Le regole di Data Quality includono:
 * **Customers:** Rimozione duplicati e gestione di email nulle. 
 * **Bookings:** Correzione di date invertite e importi negativi.
 * **Payments:** Identificazione di pagamenti "orfani" o anomali.
