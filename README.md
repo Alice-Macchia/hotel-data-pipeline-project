@@ -103,3 +103,26 @@ La dipendenza tra i task (`ingest_to_bronze >> bronze_to_silver >> silver_to_gol
 ### 📄 Dettagli di Esecuzione del DAG
 
 Per una visione dettagliata dell'esecuzione del DAG in Airflow, comprese le configurazioni della connessione ad Azure, i log dei task e gli screenshot della Web UI, si prega di consultare il file **`Esecuzione_DAG_Airflow.docx`** presente in questa repository.
+
+---
+
+## 📂 Struttura della Repository
+
+La repository è organizzata per separare in modo netto le due diverse implementazioni del progetto, i dati e la documentazione.
+
+.
+├── airflow_implementation/     # --- Logica per l'implementazione con Airflow ---
+│   ├── dags/                   # Contiene il file del DAG
+│   └── scripts/                # Script Python chiamati dal DAG (Bronze, Silver, Gold)
+│
+├── databricks_implementation/  # --- Logica per l'implementazione con Databricks ---
+│   ├── definitions/            # File JSON di configurazione per Job e Dashboard
+│   └── notebooks/              # Notebook di Databricks (DLT e ML)
+│
+├── data/                       # File CSV sorgente utilizzati dalla pipeline
+│
+├── docs/                       # Documentazione di supporto (es. screenshot esecuzione Airflow)
+│
+├── .gitignore                  # Specifica i file da ignorare (es. cache, venv)
+├── README.md                   # Questo file: la documentazione principale del progetto
+└── requirements.txt            # Librerie Python necessarie per l'implementazione Airflow
